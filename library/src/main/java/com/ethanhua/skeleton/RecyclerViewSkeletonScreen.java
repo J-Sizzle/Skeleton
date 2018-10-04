@@ -5,6 +5,7 @@ import android.support.annotation.IntRange;
 import android.support.annotation.LayoutRes;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
+import android.view.View;
 
 /**
  * Created by ethanhua on 2017/7/29.
@@ -15,11 +16,15 @@ public class RecyclerViewSkeletonScreen implements SkeletonScreen {
     private final RecyclerView mRecyclerView;
     private final RecyclerView.Adapter mActualAdapter;
     private final SkeletonAdapter mSkeletonAdapter;
+    private final SkeletonErrorAdapter mSkeletonErrorAdapter;
     private final boolean mRecyclerViewFrozen;
 
     private RecyclerViewSkeletonScreen(Builder builder) {
         mRecyclerView = builder.mRecyclerView;
         mActualAdapter = builder.mActualAdapter;
+        mSkeletonErrorAdapter = new SkeletonErrorAdapter(builder.mErrorLayoutID);
+        mSkeletonErrorAdapter.setErrorActionReference(builder.mErrorActionViewId);
+        mSkeletonErrorAdapter.setErrorActionClickListener(builder.mErrorActionClickListener);
         mSkeletonAdapter = new SkeletonAdapter();
         mSkeletonAdapter.setItemCount(builder.mItemCount);
         mSkeletonAdapter.setLayoutReference(builder.mItemResID);
@@ -28,6 +33,8 @@ public class RecyclerViewSkeletonScreen implements SkeletonScreen {
         mSkeletonAdapter.setShimmerAngle(builder.mShimmerAngle);
         mSkeletonAdapter.setShimmerDuration(builder.mShimmerDuration);
         mRecyclerViewFrozen = builder.mFrozen;
+
+
     }
 
     @Override
@@ -43,6 +50,11 @@ public class RecyclerViewSkeletonScreen implements SkeletonScreen {
         mRecyclerView.setAdapter(mActualAdapter);
     }
 
+    @Override
+    public void error() {
+        mRecyclerView.setAdapter(mSkeletonErrorAdapter);
+    }
+
     public static class Builder {
         private RecyclerView.Adapter mActualAdapter;
         private final RecyclerView mRecyclerView;
@@ -52,6 +64,9 @@ public class RecyclerViewSkeletonScreen implements SkeletonScreen {
         private int mShimmerColor;
         private int mShimmerDuration = 1000;
         private int mShimmerAngle = 20;
+        private int mErrorLayoutID = R.layout.layout_default_item_skeleton;
+        private int mErrorActionViewId;
+        private View.OnClickListener mErrorActionClickListener;
         private boolean mFrozen = true;
 
         public Builder(RecyclerView recyclerView) {
@@ -64,6 +79,30 @@ public class RecyclerViewSkeletonScreen implements SkeletonScreen {
          */
         public Builder adapter(RecyclerView.Adapter adapter) {
             this.mActualAdapter = adapter;
+            return this;
+        }
+
+        /**
+         * @param errorLayoutId the layout to show on error
+         */
+        public Builder error(int errorLayoutId) {
+            this.mErrorLayoutID = errorLayoutId;
+            return this;
+        }
+
+        /**
+         * @param errorActionViewId the view that is clickable in error screen
+         */
+        public Builder errorActionViewId(int errorActionViewId) {
+            this.mErrorActionViewId = errorActionViewId;
+            return this;
+        }
+
+        /**
+         * @param errorActionClickListener will be called for the view set in errorActionViewId
+         */
+        public Builder errorActionClickListener(View.OnClickListener errorActionClickListener) {
+            this.mErrorActionClickListener = errorActionClickListener;
             return this;
         }
 

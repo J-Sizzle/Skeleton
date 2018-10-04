@@ -9,4 +9,6 @@ public interface SkeletonScreen {
     void show();
 
     void hide();
+
+    void error();
 }

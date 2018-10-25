@@ -25,7 +25,7 @@ public class ViewSkeletonScreen implements SkeletonScreen {
     private final boolean mShimmer;
     private final int mShimmerDuration;
     private final int mShimmerAngle;
-    private int mErrorLayoutID;
+    private View mErrorView;
     private int mErrorActionViewId;
     private View.OnClickListener mErrorActionClickListener;
 
@@ -37,17 +37,19 @@ public class ViewSkeletonScreen implements SkeletonScreen {
         mShimmerAngle = builder.mShimmerAngle;
         mShimmerColor = builder.mShimmerColor;
         mViewReplacer = new ViewReplacer(builder.mView);
-        mErrorLayoutID = builder.mErrorLayoutID;
+        mErrorView = builder.mErrorView;
         mErrorActionViewId = builder.mErrorActionViewId;
         mErrorActionClickListener = builder.mErrorActionClickListener;
     }
 
     private ShimmerLayout generateShimmerContainerLayout(ViewGroup parentView) {
-        final ShimmerLayout shimmerLayout = (ShimmerLayout) LayoutInflater.from(mActualView.getContext()).inflate(R.layout.layout_shimmer, parentView, false);
+        final ShimmerLayout shimmerLayout = (ShimmerLayout) LayoutInflater.from(mActualView
+                .getContext()).inflate(R.layout.layout_shimmer, parentView, false);
         shimmerLayout.setShimmerColor(mShimmerColor);
         shimmerLayout.setShimmerAngle(mShimmerAngle);
         shimmerLayout.setShimmerAnimationDuration(mShimmerDuration);
-        View innerView = LayoutInflater.from(mActualView.getContext()).inflate(mSkeletonResID, shimmerLayout, false);
+        View innerView = LayoutInflater.from(mActualView.getContext()).inflate(mSkeletonResID,
+                shimmerLayout, false);
         shimmerLayout.addView(innerView);
         shimmerLayout.addOnAttachStateChangeListener(new View.OnAttachStateChangeListener() {
             @Override
@@ -74,7 +76,8 @@ public class ViewSkeletonScreen implements SkeletonScreen {
         if (mShimmer) {
             return generateShimmerContainerLayout(parentView);
         }
-        return LayoutInflater.from(mActualView.getContext()).inflate(mSkeletonResID, parentView, false);
+        return LayoutInflater.from(mActualView.getContext()).inflate(mSkeletonResID, parentView,
+                false);
     }
 
     private View generateSkeletonErrorView() {
@@ -83,8 +86,7 @@ public class ViewSkeletonScreen implements SkeletonScreen {
             Log.e(TAG, "the source view have not attach to any view");
             return null;
         }
-        ViewGroup parentView = (ViewGroup) viewParent;
-        return LayoutInflater.from(mActualView.getContext()).inflate(mErrorLayoutID, parentView, false);
+        return mErrorView;
     }
 
     @Override
@@ -110,7 +112,8 @@ public class ViewSkeletonScreen implements SkeletonScreen {
         if (skeletonErrorView != null) {
             mViewReplacer.replace(skeletonErrorView);
             if (mErrorActionViewId > 0 && mErrorActionClickListener != null) {
-                skeletonErrorView.findViewById(mErrorActionViewId).setOnClickListener(mErrorActionClickListener);
+                skeletonErrorView.findViewById(mErrorActionViewId).setOnClickListener
+                        (mErrorActionClickListener);
             }
         }
     }
@@ -122,13 +125,15 @@ public class ViewSkeletonScreen implements SkeletonScreen {
         private int mShimmerColor;
         private int mShimmerDuration = 1000;
         private int mShimmerAngle = 20;
-        private int mErrorLayoutID = R.layout.layout_default_item_skeleton;
+        private View mErrorView;
         private int mErrorActionViewId;
         private View.OnClickListener mErrorActionClickListener;
 
         public Builder(View view) {
             this.mView = view;
             this.mShimmerColor = ContextCompat.getColor(mView.getContext(), R.color.shimmer_color);
+            this.mErrorView = LayoutInflater.from(mView.getContext()).inflate(R.layout
+                    .layout_default_item_skeleton, null, false);
         }
 
         /**
@@ -151,7 +156,8 @@ public class ViewSkeletonScreen implements SkeletonScreen {
          * @param errorLayoutId the layout to show on error
          */
         public Builder error(int errorLayoutId) {
-            this.mErrorLayoutID = errorLayoutId;
+            this.mErrorView = LayoutInflater.from(mView.getContext()).inflate(errorLayoutId,
+                    null, false);
             return this;
         }
 
@@ -160,6 +166,14 @@ public class ViewSkeletonScreen implements SkeletonScreen {
          */
         public Builder errorActionViewId(int errorActionViewId) {
             this.mErrorActionViewId = errorActionViewId;
+            return this;
+        }
+
+        /**
+         * @param errorView the view that is clickable in error screen
+         */
+        public Builder errorView(View errorView) {
+            this.mErrorView = errorView;
             return this;
         }
 
@@ -180,7 +194,8 @@ public class ViewSkeletonScreen implements SkeletonScreen {
         }
 
         /**
-         * the duration of the animation , the time it will take for the highlight to move from one end of the layout
+         * the duration of the animation , the time it will take for the highlight to move from
+         * one end of the layout
          * to the other.
          *
          * @param shimmerDuration Duration of the shimmer animation, in milliseconds

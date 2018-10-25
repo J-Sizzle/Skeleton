@@ -4,6 +4,7 @@ import android.support.annotation.IntRange;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
+import android.widget.RelativeLayout;
 
 import io.supercharge.shimmerlayout.ShimmerLayout;
 
@@ -34,6 +35,8 @@ public class SkeletonAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         if (mShimmer) {
             ShimmerLayout layout = (ShimmerLayout) holder.itemView;
+            layout.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams
+                    .MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT));
             layout.setShimmerAnimationDuration(mShimmerDuration);
             layout.setShimmerAngle(mShimmerAngle);
             layout.setShimmerColor(mColor);

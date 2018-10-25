@@ -7,18 +7,17 @@ import android.view.ViewGroup;
 
 public class SkeletonErrorAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    private Integer mLayoutReference;
+    private View mErrorView;
     private Integer mErrorActionReference;
     private View.OnClickListener mErrorActionClickListener;
 
-    SkeletonErrorAdapter(int mErrorLayoutID) {
-        this.mLayoutReference = mErrorLayoutID;
+    SkeletonErrorAdapter(View mErrorView) {
+        this.mErrorView = mErrorView;
     }
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-        return new RecyclerView.ViewHolder(inflater.inflate(mLayoutReference, parent, false)) {
+        return new RecyclerView.ViewHolder(mErrorView) {
         };
     }
 

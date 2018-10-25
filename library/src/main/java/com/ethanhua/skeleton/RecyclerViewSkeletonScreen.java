@@ -5,6 +5,7 @@ import android.support.annotation.IntRange;
 import android.support.annotation.LayoutRes;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
 import android.view.View;
 
 /**
@@ -22,7 +23,7 @@ public class RecyclerViewSkeletonScreen implements SkeletonScreen {
     private RecyclerViewSkeletonScreen(Builder builder) {
         mRecyclerView = builder.mRecyclerView;
         mActualAdapter = builder.mActualAdapter;
-        mSkeletonErrorAdapter = new SkeletonErrorAdapter(builder.mErrorLayoutID);
+        mSkeletonErrorAdapter = new SkeletonErrorAdapter(builder.mErrorView);
         mSkeletonErrorAdapter.setErrorActionReference(builder.mErrorActionViewId);
         mSkeletonErrorAdapter.setErrorActionClickListener(builder.mErrorActionClickListener);
         mSkeletonAdapter = new SkeletonAdapter();
@@ -33,8 +34,6 @@ public class RecyclerViewSkeletonScreen implements SkeletonScreen {
         mSkeletonAdapter.setShimmerAngle(builder.mShimmerAngle);
         mSkeletonAdapter.setShimmerDuration(builder.mShimmerDuration);
         mRecyclerViewFrozen = builder.mFrozen;
-
-
     }
 
     @Override
@@ -47,7 +46,9 @@ public class RecyclerViewSkeletonScreen implements SkeletonScreen {
 
     @Override
     public void hide() {
-        mRecyclerView.setAdapter(mActualAdapter);
+        if (!mRecyclerView.getAdapter().equals(mActualAdapter)) {
+            mRecyclerView.setAdapter(mActualAdapter);
+        }
     }
 
     @Override
@@ -64,14 +65,17 @@ public class RecyclerViewSkeletonScreen implements SkeletonScreen {
         private int mShimmerColor;
         private int mShimmerDuration = 1000;
         private int mShimmerAngle = 20;
-        private int mErrorLayoutID = R.layout.layout_default_item_skeleton;
+        private View mErrorView;
         private int mErrorActionViewId;
         private View.OnClickListener mErrorActionClickListener;
         private boolean mFrozen = true;
 
         public Builder(RecyclerView recyclerView) {
             this.mRecyclerView = recyclerView;
-            this.mShimmerColor = ContextCompat.getColor(recyclerView.getContext(), R.color.shimmer_color);
+            this.mShimmerColor = ContextCompat.getColor(recyclerView.getContext(), R.color
+                    .shimmer_color);
+            this.mErrorView = LayoutInflater.from(recyclerView.getContext()).inflate(R.layout
+                    .layout_default_item_skeleton, null, false);
         }
 
         /**
@@ -86,7 +90,16 @@ public class RecyclerViewSkeletonScreen implements SkeletonScreen {
          * @param errorLayoutId the layout to show on error
          */
         public Builder error(int errorLayoutId) {
-            this.mErrorLayoutID = errorLayoutId;
+            this.mErrorView = LayoutInflater.from(mRecyclerView.getContext()).inflate
+                    (errorLayoutId, null, false);
+            return this;
+        }
+
+        /**
+         * @param errorView the view to show on error
+         */
+        public Builder error(View errorView) {
+            this.mErrorView = errorView;
             return this;
         }
 
@@ -123,7 +136,8 @@ public class RecyclerViewSkeletonScreen implements SkeletonScreen {
         }
 
         /**
-         * the duration of the animation , the time it will take for the highlight to move from one end of the layout
+         * the duration of the animation , the time it will take for the highlight to move from
+         * one end of the layout
          * to the other.
          *
          * @param shimmerDuration Duration of the shimmer animation, in milliseconds

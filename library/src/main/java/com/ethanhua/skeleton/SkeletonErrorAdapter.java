@@ -4,6 +4,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RelativeLayout;
 
 public class SkeletonErrorAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
@@ -23,8 +24,11 @@ public class SkeletonErrorAdapter extends RecyclerView.Adapter<RecyclerView.View
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+        holder.itemView.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams
+                .MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT));
         if (mErrorActionReference != null && mErrorActionClickListener != null) {
-            holder.itemView.findViewById(mErrorActionReference).setOnClickListener(mErrorActionClickListener);
+            holder.itemView.findViewById(mErrorActionReference).setOnClickListener
+                    (mErrorActionClickListener);
         }
     }
 
